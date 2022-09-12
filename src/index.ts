@@ -1,9 +1,14 @@
 import "dotenv/config";
 const port = process.env.PORT || 3000;
 
-import Koa from "koa";
+import Koa, { type DefaultState } from "koa";
 
-const server = new Koa();
+import { db } from "./util/middleware.js";
+import type { AppContext } from "./util/typedefs.js";
+
+const server = new Koa<DefaultState, AppContext>();
+
+server.use(db());
 
 server
     .listen(port, () => console.log(`Listening on http://localhost:${port}`))
