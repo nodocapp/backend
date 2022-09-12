@@ -1,0 +1,10 @@
+{
+  "name": "nodoc-backend",
+  "version": "0.0.1",
+  "description": "The backbone of noDoc",
+  "main": "src/index.ts",
+  "repository": "https://github.com/nodocapp/backend.git",
+  "author": "Andrea Giurgola <Andrea.giurgo@gmail.com>",
+  "license": "UNLICENSED",
+  "private": true
+}
