@@ -6,7 +6,7 @@ import Koa from "koa";
 import { db } from "./util/middleware.js";
 import type { AppContext, AppState } from "./util/typedefs";
 
-import user from "./routes/user.js";
+import user from "./routes/user/index.js";
 
 const server = new Koa<AppState, AppContext>();
 

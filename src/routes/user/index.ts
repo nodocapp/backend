@@ -1,7 +1,7 @@
 import Router from "@koa/router";
-import { subToId } from "../util/utilities.js";
-import { auth } from "../util/middleware.js";
-import type { AppContext, AppState } from "../util/typedefs.js";
+import { subToId } from "../../util/utilities.js";
+import { auth } from "../../util/middleware.js";
+import type { AppContext, AppState } from "../../util/typedefs.js";
 
 const router = new Router<AppState, AppContext>({ prefix: "/user" });
 
