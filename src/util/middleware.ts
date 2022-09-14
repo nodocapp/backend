@@ -16,8 +16,9 @@ export const auth = jwt({
 });
 
 export function db(): Middleware {
+    const prisma = new PrismaClient();
+
     return async (ctx, next) => {
-        const prisma = new PrismaClient();
         ctx.prisma = prisma;
         await next();
     };
