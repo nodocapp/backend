@@ -10,6 +10,14 @@ import user from "./routes/user/index.js";
 
 const server = new Koa<AppState, AppContext>();
 
+server.use(async (ctx, next) => {
+    try {
+        await next();
+    } catch (err) {
+        ctx.status = 500;
+        ctx.body = `The server encountered an error while handling your request.\n${err}`;
+    }
+});
 server.use(db());
 
 server.use(user.routes()).use(user.allowedMethods());
