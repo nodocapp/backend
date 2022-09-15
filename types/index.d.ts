@@ -4,6 +4,7 @@ declare global {
             AUTH_AUDIENCE: string;
             AUTH_ISSUER: string;
             DB_URI: string;
+            DOCS_PATH: string
         }
     }
 }

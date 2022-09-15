@@ -7,6 +7,7 @@ import { db } from "./util/middleware.js";
 import type { AppContext, AppState } from "./util/typedefs";
 
 import user from "./routes/user/index.js";
+import docs from "./routes/docs.js";
 
 const server = new Koa<AppState, AppContext>();
 
@@ -21,6 +22,7 @@ server.use(async (ctx, next) => {
 server.use(db());
 
 server.use(user.routes()).use(user.allowedMethods());
+server.use(docs.routes()).use(docs.allowedMethods());
 
 server
     .listen(port, () => console.log(`Listening on http://localhost:${port}`))
