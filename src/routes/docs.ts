@@ -6,8 +6,9 @@ import { createWriteStream } from "fs";
 import { Readable } from "stream";
 import { auth } from "../util/middleware.js";
 import type { AppContext, AppState } from "../util/typedefs.js";
-import { escapedPath, subToId } from "../util/utilities.js";
+import { checkForRegistryField, escapedPath, subToId } from "../util/utilities.js";
 import { readdir, readFile } from "fs/promises";
+import type { Prisma } from "@prisma/client";
 
 const router = new Router<AppState, AppContext>({ prefix: "/docs" });
 
@@ -31,11 +32,20 @@ router.post("createDocument", "/create", auth, koaBody(), async (ctx, next) => {
         return await next();
     }
 
+    const registry = (await ctx.prisma.user.findUnique({ where: { id: subToId(ctx.state.user.sub) } }))?.registry as Prisma.JsonObject;
+    const inexistentFields = checkForRegistryField(ctx.request.body, registry);
+
+    if (inexistentFields.length > 0) {
+        ctx.status = 400;
+        ctx.body = `${inexistentFields.join(", ")} ${inexistentFields.length === 1 ? "doesn't" : "don't"} exist in your registry.`;
+        return await next();
+    }
+
     const id = randomBytes(16).toString("hex");
     const stream = createWriteStream(`${escapedPath(process.env.DOCS_PATH as string)}${sep}${subToId(ctx.state.user.sub)}${sep}${id}.json`, { encoding: "utf-8" });
     Readable.from(Buffer.from(JSON.stringify(ctx.request.body))).pipe(stream);
 
-    return await new Promise(res => {
+    return await new Promise((res, rej) => {
         stream.on("finish", () => {
             ctx.status = 201;
             ctx.body = `Document with ID ${id} has been created.`;
@@ -43,7 +53,7 @@ router.post("createDocument", "/create", auth, koaBody(), async (ctx, next) => {
         });
 
         stream.on("error", err => {
-            throw err;
+            rej(err);
         });
     });
 });
