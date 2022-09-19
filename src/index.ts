@@ -4,7 +4,7 @@ const port = process.env.PORT || 3000;
 import Koa from "koa";
 
 import { db } from "./util/middleware.js";
-import type { AppContext, AppState } from "./util/typedefs";
+import type { AppContext, AppState } from "types";
 
 import user from "./routes/user/index.js";
 import docs from "./routes/docs.js";

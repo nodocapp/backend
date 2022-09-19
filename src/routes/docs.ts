@@ -5,10 +5,9 @@ import { sep } from "path";
 import { createWriteStream } from "fs";
 import { Readable } from "stream";
 import { auth } from "../util/middleware.js";
-import type { AppContext, AppState } from "../util/typedefs.js";
+import type { AppContext, AppState } from "types";
 import { checkForRegistryField, escapedPath, subToId } from "../util/utilities.js";
 import { readdir, readFile } from "fs/promises";
-import type { Prisma } from "@prisma/client";
 
 const router = new Router<AppState, AppContext>({ prefix: "/docs" });
 

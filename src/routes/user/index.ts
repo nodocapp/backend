@@ -2,7 +2,7 @@ import Router from "@koa/router";
 import registry from "./registry.js";
 import { subToId } from "../../util/utilities.js";
 import { auth } from "../../util/middleware.js";
-import type { AppContext, AppState } from "../../util/typedefs.js";
+import type { AppContext, AppState } from "types";
 
 const router = new Router<AppState, AppContext>({ prefix: "/user" });
 

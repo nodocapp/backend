@@ -1,7 +1,7 @@
 import Router from "@koa/router";
 import koaBody from "koa-body";
 import { Prisma } from "@prisma/client";
-import type { AppContext, AppState } from "../../util/typedefs.js";
+import type { AppContext, AppState } from "types";
 import { auth } from "../../util/middleware.js";
 import { subToId } from "../../util/utilities.js";
 
