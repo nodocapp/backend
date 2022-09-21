@@ -38,7 +38,7 @@ export function checkForRegistryField(elem: Element, registry: Record<string, st
                 result.push(checkForRegistryField(value, registry)[0]);
             }
         }
-        return result;
+        return result.filter(v => v);
     } else {
         return Object.keys(registry).includes(docFieldtoField(elem)) ? [] : [docFieldtoField(elem)];
     }
