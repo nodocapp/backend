@@ -6,7 +6,7 @@ import { createWriteStream } from "fs";
 import { Readable } from "stream";
 import { auth } from "../util/middleware.js";
 import type { AppContext, AppState } from "types";
-import { checkForRegistryField, escapedPath, subToId } from "../util/utilities.js";
+import { checkForRegistryField, docFieldtoField, escapedPath, getAllObjectValues, subToId } from "../util/utilities.js";
 import { readdir, readFile } from "fs/promises";
 
 const router = new Router<AppState, AppContext>({ prefix: "/docs" });
@@ -65,9 +65,20 @@ router.get("getDocument", "/:id", auth, async (ctx, next) => {
     } 
 
     try {
-        const file = await readFile(`${escapedPath(process.env.DOCS_PATH as string)}${sep}${subToId(ctx.state.user.sub)}${sep}${ctx.params.id}.json`, { encoding: "utf-8" });
+        const file = await readFile(`${escapedPath(process.env.DOCS_PATH as string)}${sep}${subToId(ctx.state.user.sub)}${sep}${ctx.params.id}.json`, "utf-8");
+        const fields = getAllObjectValues(JSON.parse(file)).filter(v => v.startsWith("$"));
+        let returnFile = file;
+        
+        if (fields.length > 0) {
+            const registry = (await ctx.prisma.user.findUnique({ where: { id: subToId(ctx.state.user.sub) } }))?.registry as Record<string, string>;
+
+            fields.forEach(f => {
+                returnFile = returnFile.replace(f, registry[docFieldtoField(f)]);
+            });
+        }
+        
         ctx.status = 200;
-        ctx.body = file;
+        ctx.body = returnFile;
     } catch (err) {
         if (err instanceof Error && err.message.startsWith("ENOENT")) {
             ctx.status = 404;
