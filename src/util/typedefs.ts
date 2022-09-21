@@ -1,5 +1,8 @@
 import type { PrismaClient } from "@prisma/client";
 
+export type Element = string | { [key: string]: Element }
+export type Registry = Record<string, string>;
+
 export interface JWTData {
     iss: string;
     sub: string;

@@ -31,7 +31,7 @@ router.post("createDocument", "/create", auth, koaBody(), async (ctx, next) => {
         return await next();
     }
 
-    const registry = (await ctx.prisma.user.findUnique({ where: { id: subToId(ctx.state.user.sub) } }))?.registry as Prisma.JsonObject;
+    const registry = (await ctx.prisma.user.findUnique({ where: { id: subToId(ctx.state.user.sub) } }))?.registry as Record<string, string>;
     const inexistentFields = checkForRegistryField(ctx.request.body, registry);
 
     if (inexistentFields.length > 0) {
