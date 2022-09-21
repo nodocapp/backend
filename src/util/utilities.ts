@@ -17,13 +17,24 @@ export function docFieldtoField(field: string) {
     return field.replace("$", "");
 }
 
+export function getAllObjectValues(obj: object) {
+    const result: string[] = [];
+
+    for (const value of Object.values(obj)) {
+        if (typeof value === "object") {
+            getAllObjectValues(value).forEach(v => result.push(v));
+        } else result.push(value);
+    }
+
+    return result;
+}
+
 export function checkForRegistryField(elem: Element, registry: Record<string, string>) {
     if (typeof elem === "object") {
+        const values = getAllObjectValues(elem);
         const result: string[] = [];
-        for (const value of Object.values(elem)) {
-            if (typeof value === "object") {
-                checkForRegistryField(value, registry).forEach(v => result.push(v));
-            } else if (typeof value === "string" && value.startsWith("$")) {
+        for (const value of values) {
+            if (value.startsWith("$")) {
                 result.push(checkForRegistryField(value, registry)[0]);
             }
         }
