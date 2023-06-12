@@ -29,7 +29,10 @@ export function getAllObjectValues(obj: object) {
     return result;
 }
 
-export function checkForRegistryField(elem: Element, registry: Record<string, string>) {
+export function checkForRegistryField(
+    elem: Element,
+    registry: Record<string, string>
+) {
     if (typeof elem === "object") {
         const values = getAllObjectValues(elem);
         const result: string[] = [];
@@ -40,6 +43,8 @@ export function checkForRegistryField(elem: Element, registry: Record<string, st
         }
         return result.filter(v => v);
     } else {
-        return Object.keys(registry).includes(docFieldtoField(elem)) ? [] : [docFieldtoField(elem)];
+        return Object.keys(registry).includes(docFieldtoField(elem))
+            ? []
+            : [docFieldtoField(elem)];
     }
 }

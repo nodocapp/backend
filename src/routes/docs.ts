@@ -6,13 +6,23 @@ import { createWriteStream } from "fs";
 import { Readable } from "stream";
 import { auth } from "../util/middleware.js";
 import type { AppContext, AppState } from "types";
-import { checkForRegistryField, docFieldtoField, escapedPath, getAllObjectValues, subToId } from "../util/utilities.js";
+import {
+    checkForRegistryField,
+    docFieldtoField,
+    escapedPath,
+    getAllObjectValues,
+    subToId,
+} from "../util/utilities.js";
 import { readdir, readFile } from "fs/promises";
 
 const router = new Router<AppState, AppContext>({ prefix: "/docs" });
 
 router.get("getDocumentIds", "/", auth, async (ctx, next) => {
-    const dir = await readdir(`${escapedPath(process.env.DOCS_PATH as string)}${sep}${subToId(ctx.state.user.sub)}`);
+    const dir = await readdir(
+        `${escapedPath(process.env.DOCS_PATH as string)}${sep}${subToId(
+            ctx.state.user.sub
+        )}`
+    );
 
     if (dir.length === 0) {
         ctx.status = 200;
@@ -31,17 +41,28 @@ router.post("createDocument", "/create", auth, koaBody(), async (ctx, next) => {
         return await next();
     }
 
-    const registry = (await ctx.prisma.user.findUnique({ where: { id: subToId(ctx.state.user.sub) } }))?.registry as Record<string, string>;
+    const registry = (
+        await ctx.prisma.user.findUnique({
+            where: { id: subToId(ctx.state.user.sub) },
+        })
+    )?.registry as Record<string, string>;
     const inexistentFields = checkForRegistryField(ctx.request.body, registry);
 
     if (inexistentFields.length > 0) {
         ctx.status = 400;
-        ctx.body = `${inexistentFields.join(", ")} ${inexistentFields.length === 1 ? "doesn't" : "don't"} exist in your registry.`;
+        ctx.body = `${inexistentFields.join(", ")} ${
+            inexistentFields.length === 1 ? "doesn't" : "don't"
+        } exist in your registry.`;
         return await next();
     }
 
     const id = randomBytes(16).toString("hex");
-    const stream = createWriteStream(`${escapedPath(process.env.DOCS_PATH as string)}${sep}${subToId(ctx.state.user.sub)}${sep}${id}.json`, { encoding: "utf-8" });
+    const stream = createWriteStream(
+        `${escapedPath(process.env.DOCS_PATH as string)}${sep}${subToId(
+            ctx.state.user.sub
+        )}${sep}${id}.json`,
+        { encoding: "utf-8" }
+    );
     Readable.from(Buffer.from(JSON.stringify(ctx.request.body))).pipe(stream);
 
     return await new Promise((res, rej) => {
@@ -62,21 +83,35 @@ router.get("getDocument", "/:id", auth, async (ctx, next) => {
         ctx.status = 400;
         ctx.body = "A valid ID must be provided.";
         return await next();
-    } 
+    }
 
     try {
-        const file = await readFile(`${escapedPath(process.env.DOCS_PATH as string)}${sep}${subToId(ctx.state.user.sub)}${sep}${ctx.params.id}.json`, "utf-8");
-        const fields = getAllObjectValues(JSON.parse(file)).filter(v => v.startsWith("$"));
+        const file = await readFile(
+            `${escapedPath(process.env.DOCS_PATH as string)}${sep}${subToId(
+                ctx.state.user.sub
+            )}${sep}${ctx.params.id}.json`,
+            "utf-8"
+        );
+        const fields = getAllObjectValues(JSON.parse(file)).filter(v =>
+            v.startsWith("$")
+        );
         let returnFile = file;
-        
+
         if (fields.length > 0) {
-            const registry = (await ctx.prisma.user.findUnique({ where: { id: subToId(ctx.state.user.sub) } }))?.registry as Record<string, string>;
+            const registry = (
+                await ctx.prisma.user.findUnique({
+                    where: { id: subToId(ctx.state.user.sub) },
+                })
+            )?.registry as Record<string, string>;
 
             fields.forEach(f => {
-                returnFile = returnFile.replace(f, registry[docFieldtoField(f)]);
+                returnFile = returnFile.replace(
+                    f,
+                    registry[docFieldtoField(f)]
+                );
             });
         }
-        
+
         ctx.status = 200;
         ctx.body = returnFile;
     } catch (err) {
