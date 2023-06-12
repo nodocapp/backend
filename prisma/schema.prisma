@@ -12,5 +12,5 @@ model User {
     email     String @unique
     firstName String
     lastName  String
-    registry  Json   @db.Json    
+    registry  Json   @db.Json
 }
