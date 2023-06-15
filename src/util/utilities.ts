@@ -1,5 +1,5 @@
 import { platform } from "process";
-import type { Element } from "types";
+import type { Element, Registry } from "types";
 
 export function subToId(sub: string) {
     return sub.replace("auth0|", "");
@@ -29,10 +29,7 @@ export function getAllObjectValues(obj: object) {
     return result;
 }
 
-export function checkForRegistryField(
-    elem: Element,
-    registry: Record<string, string>
-) {
+export function checkForRegistryField(elem: Element, registry: Registry) {
     if (typeof elem === "object") {
         const values = getAllObjectValues(elem);
         const result: string[] = [];

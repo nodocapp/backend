@@ -5,7 +5,7 @@ import { sep } from "path";
 import { createWriteStream } from "fs";
 import { Readable } from "stream";
 import { auth } from "../util/middleware.js";
-import type { AppContext, AppState } from "types";
+import type { AppContext, AppState, Registry } from "types";
 import {
     checkForRegistryField,
     docFieldtoField,
@@ -45,7 +45,7 @@ router.post("createDocument", "/create", auth, koaBody(), async (ctx, next) => {
         await ctx.prisma.user.findUnique({
             where: { id: subToId(ctx.state.user.sub) },
         })
-    )?.registry as Record<string, string>;
+    )?.registry as Registry;
     const inexistentFields = checkForRegistryField(ctx.request.body, registry);
 
     if (inexistentFields.length > 0) {
@@ -102,7 +102,7 @@ router.get("getDocument", "/:id", auth, async (ctx, next) => {
                 await ctx.prisma.user.findUnique({
                     where: { id: subToId(ctx.state.user.sub) },
                 })
-            )?.registry as Record<string, string>;
+            )?.registry as Registry;
 
             fields.forEach(f => {
                 returnFile = returnFile.replace(
